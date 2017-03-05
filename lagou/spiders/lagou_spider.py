@@ -13,6 +13,7 @@ class LagoupositonSpider(scrapy.Spider):
     curpage = 1
     curkd = 1 #当前关键字
     position_url = 'http://www.lagou.com/jobs/positionAjax.json?'
+    #http://www.lagou.com/jobs/positionAjax.json?pn=1
 
     #city = u'北京'
     #kds = [u'java','python','PHP','.NET','JavaScript','C#','C++','C','VB','Dephi','Perl','Ruby','Go','ASP','Shell']
@@ -29,12 +30,14 @@ class LagoupositonSpider(scrapy.Spider):
         #                                 formdata={'pn':str(self.curpage),'kd':self.kd},callback=self.parse)
         #     也可以是city
         #查询特定关键词的内容，通过request
-        return [scrapy.http.FormRequest(self.position_url,
-                                        formdata={'pn': str(self.curpage)}, #第一页
-                                        callback=self.parse)]
+        # return [scrapy.http.FormRequest(self.position_url,
+        #                                 formdata={'pn': str(self.curpage)}, #第一页
+        #                                 callback=self.parse)]
+        yield scrapy.Request(self.position_url+"pn=%d"%self.curpage, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
         #print response.body
+        print("===============%s"%response.body)
         item = LagouItem()
         jdict = json.loads(response.body)
         jcontent = jdict["content"]
